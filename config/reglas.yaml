@@ -1,0 +1,112 @@
+# ═══════════════════════════════════════════════════════════════
+#  CONFIGURACIÓN ÚNICA DEL SISTEMA (fuente de verdad, ver DECISIONES.md)
+#  Cualquier cambio aquí se valida al recargar. Si es incoherente,
+#  el sistema muestra el error y conserva la última versión válida.
+# ═══════════════════════════════════════════════════════════════
+
+horario:
+  apertura: "06:00"
+  cierre: "22:00"
+  dias_habiles: [0, 1, 2, 3, 4, 5]     # 0 = lunes ... 6 = domingo
+  granularidad_min: 30
+
+reservas:
+  duracion_min: 30
+  duracion_max: 240
+  margen_entre_reservas_min: 0
+  anticipacion_max_dias: 14
+  factor_aforo: 1.0
+  reservas_activas_max_persona: 3
+  sala_grande_desde_aforo: 20         # R8: aforo >= esto es "sala grande"
+  ocupacion_min_pct: 30               # R8: solo advertencia
+
+limites:
+  por_pool: false                     # ← INTERRUPTOR: false = global, true = por pool
+  global:
+    prestamos_activos_max_persona: 2
+    prestamo_duracion_max_min: 480
+
+incidencias:
+  prioridades: [baja, media, alta, critica]
+  sla_horas: { baja: 72, media: 24, alta: 8, critica: 2 }
+  prioridad_que_inhabilita: critica
+  prioridades_con_aviso: [media, alta, critica]
+  ventana_reporte_post_min: 60        # R7: minutos después del fin
+
+ia:
+  umbral_confianza: 0.70
+  temperatura: 0
+  semilla: 42
+  timeout_seg: 20
+  reintentos: 1
+  keep_alive: "60m"
+  max_resumen: 120
+  max_justificacion: 300
+
+# ─── ELEMENTOS DE LOS ESPACIOS ──────────────────────────────────
+#  impacto: invalida | degrada | no_afecta
+#  invalida_si_danados_mayor_a_pct: umbral sobre el aforo (solo PCs)
+elementos:
+  internet:     { nombre: "Internet",        impacto: invalida,  area: TI }
+  televisor:    { nombre: "Televisor",       impacto: degrada,   area: TI }
+  aire_acond:   { nombre: "Aire acondicionado", impacto: degrada, area: Administrativo }
+  lector_pines: { nombre: "Lector de pines", impacto: degrada,   area: TI }
+  tableros:     { nombre: "Tableros",        impacto: no_afecta, area: Administrativo }
+  sillas:       { nombre: "Sillas",          impacto: no_afecta, area: Administrativo }
+  pc:           { nombre: "PC",              impacto: degrada,   area: TI, invalida_si_danados_mayor_a_pct: 50 }
+
+elementos_base: [internet, televisor, aire_acond, lector_pines, tableros, sillas]
+
+# Excepciones y elementos extra por espacio (el aforo viene de los datos)
+espacios:
+  Auditorio: { excepciones: { internet: degrada } }
+  Sputnik:   { elementos_extra: [pc] }
+  Artemis:   { elementos_extra: [pc] }
+  Skilab:    { elementos_extra: [pc] }
+
+# ─── POOLS DE RECURSOS PORTÁTILES ───────────────────────────────
+pools:
+  computo_portatil:
+    nombre: "Cómputo portátil"
+    area: TI
+    tipos_dataset: ["Laptop", "Portatil", "Portátil", "Tablet"]
+    limites: { prestamos_activos_max_persona: 1, prestamo_duracion_max_min: 240 }
+  audio:
+    nombre: "Audio"
+    area: TI
+    tipos_dataset: ["Microfono", "Micrófono", "Parlante"]
+  video:
+    nombre: "Video"
+    area: TI
+    tipos_dataset: ["Camara", "Cámara", "Proyector portatil"]
+
+# ─── CATÁLOGOS (D4: mandan los datos; aquí solo se da significado) ──
+catalogos:
+  roles:
+    "Trainer": usuario
+    "Teacher": usuario
+    "Administrativo": administrativo
+    "TI": ti
+  estados_reserva:
+    "Confirmada": confirmada
+    "Finalizada": finalizada
+    "Pendiente": pendiente
+    "Cancelada": cancelada
+    "Rechazada": cancelada
+    "No asistio": cancelada
+  estados_recurso:
+    "Operativo": disponible
+    "Disponible": disponible
+    "En uso": prestado
+    "Prestado": prestado
+    "Dañado": danado
+    "Fuera de servicio": danado
+    "En reparacion": mantenimiento
+    "Mantenimiento": mantenimiento
+
+# Máquina de estados de recursos (R5)
+transiciones_recurso:
+  disponible: [prestado, danado]
+  prestado: [disponible, danado]
+  danado: [mantenimiento]
+  mantenimiento: [disponible]
