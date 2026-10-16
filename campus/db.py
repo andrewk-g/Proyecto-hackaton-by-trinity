@@ -1,10 +1,11 @@
 """Persistencia en SQLite. Los CSV originales nunca se modifican (P5)."""
 import json
+import os
 import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-RUTA_DB = Path(__file__).resolve().parent.parent / "data" / "campus.db"
+RUTA_DB = Path(os.getenv("CAMPUS_DB", Path(__file__).resolve().parent.parent / "data" / "campus.db"))
 
 ESQUEMA = """
 CREATE TABLE IF NOT EXISTS personas (id TEXT PRIMARY KEY, nombre TEXT, rol_dataset TEXT, rol TEXT);
