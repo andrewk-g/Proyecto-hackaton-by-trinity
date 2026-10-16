@@ -266,7 +266,7 @@ Manual, por TI, respetando la máquina de estados. Excepción: inhabilitación *
 - **Precalentamiento** al arrancar y estado visible: *"IA lista"* / *"IA no disponible"*. La primera carga en frío tarda ~1 minuto; en caliente, ~5 s por triaje.
 - **`keep_alive: 60m`** en cada llamada para que el modelo no se descargue de la GPU durante la demo.
 - Los límites de longitud (`resumen`, `justificacion`) se validan en código: el modelo a veces los excede (probado).
-- 🟡 Confirmar con la organización que los modelos locales están autorizados.
+- ✅ La organización autorizó los modelos locales.
 
 ```
 AI_BASE_URL=http://localhost:11434
@@ -348,8 +348,8 @@ Prompt, respuesta cruda, modelo, latencia y resultado de cada validación.
 
 | Parámetro | Valor | Estado |
 |---|---|---|
-| `HORA_APERTURA` / `HORA_CIERRE` | 06:00 / 22:00 | 🟡 confirmar con Campuslands |
-| `DIAS_HABILES` | Lunes a sábado | 🟡 |
+| `HORA_APERTURA` / `HORA_CIERRE` | 06:00 / 22:00 | ✅ |
+| `DIAS_HABILES` | Lunes a sábado | ✅ |
 | `GRANULARIDAD_MIN` | 30 | ✅ |
 | `RESERVA_DURACION_MIN` / `MAX` | 30 / 240 | ✅ |
 | `MARGEN_ENTRE_RESERVAS_MIN` | 0 | ✅ |
@@ -385,9 +385,12 @@ Prompt, respuesta cruda, modelo, latencia y resultado de cada validación.
 - Campers como usuarios.
 - Login institucional (la lógica de permisos ya está separada).
 
-## 11. Pendientes 🟡
+## 11. Stack ✅
 
-- Horario y días hábiles reales.
-- Confirmar con la organización que los modelos locales están autorizados.
-- Stack tecnológico.
-- Plan de trabajo por persona.
+Python + Streamlit + SQLite + YAML + Ollama. Elegido porque el equipo domina Python y no tiene experiencia en frontend ni frameworks de backend.
+
+## 12. Cerrados recientemente ✅
+
+- Horario: 06:00–22:00, lunes a sábado.
+- Modelo local autorizado por la organización.
+- Máquina de estados: se agrega `disponible → dañado` para que TI pueda confirmar daños de recursos en bodega.
