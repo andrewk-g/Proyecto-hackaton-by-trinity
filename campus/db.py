@@ -60,10 +60,19 @@ def conectar():
     return con
 
 
+TABLAS = ("personas", "espacios", "elementos", "recursos", "reservas", "prestamos",
+          "incidencias", "auditoria", "cuarentena", "correcciones")
+
+
 def reiniciar():
-    if RUTA_DB.exists():
-        RUTA_DB.unlink()
-    return conectar()
+    """Vacía las tablas en lugar de borrar el archivo: en Windows el archivo no se
+    puede borrar mientras otras sesiones (otros usuarios) lo tengan abierto."""
+    con = conectar()
+    for t in TABLAS:
+        con.execute(f"DELETE FROM {t}")
+    con.execute("DELETE FROM sqlite_sequence")
+    con.commit()
+    return con
 
 
 def auditar(con, actor, accion, detalle):

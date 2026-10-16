@@ -147,6 +147,14 @@ streamlit run app.py
 ```
 Se abre en `http://localhost:8501`. La primera vez carga el modelo en memoria (puede tardar ~1 minuto) e importa los CSV de `data/ejemplo` (ficticios, con casos borde).
 
+### Uso compartido en red
+La app es un servidor: otras personas en la **misma red** pueden usarla a la vez desde su navegador, y todas comparten la misma base de datos.
+1. En el equipo que corre la app, ejecutar `streamlit run app.py` (la IA corre solo en ese equipo).
+2. Streamlit muestra una línea `Network URL: http://<IP>:8501`: compartir esa dirección.
+3. Si Windows pregunta por el firewall, permitir el acceso en **redes privadas**.
+
+Notas: "Recargar configuración" aplica a todos los usuarios conectados. No hay login (MVP): cada persona elige con quién actuar en "Actuando como".
+
 ### Pruebas
 ```bash
 python -m unittest discover -s tests -v

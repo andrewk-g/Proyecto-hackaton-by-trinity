@@ -46,12 +46,20 @@ COLOR_ESTADO = {"aplicada": "🔴", "pendiente_verificacion": "🟠", "abierta":
 
 
 # ─── Estado de la sesión ─────────────────────────────────────────────────
+@st.cache_resource
+def compartido():
+    """Configuración común a todas las sesiones (todos los usuarios conectados)."""
+    return {"cfg": None}
+
+
 def iniciar():
-    if "cfg" not in st.session_state:
-        st.session_state.cfg, errores = conf.recargar()
+    if compartido()["cfg"] is None:
+        cfg_inicial, errores = conf.recargar()
         if errores:
             st.error("La configuración tiene errores:\n\n- " + "\n- ".join(errores))
             st.stop()
+        compartido()["cfg"] = cfg_inicial
+    st.session_state.cfg = compartido()["cfg"]
     if "con" not in st.session_state:
         con = db.conectar()
         if not db.fila(con, "SELECT COUNT(*) n FROM personas")["n"]:
@@ -108,9 +116,9 @@ with st.sidebar:
             if errores:
                 avisar("error", "Configuración inválida, se conserva la anterior:\n\n- " + "\n- ".join(errores))
             else:
-                st.session_state.cfg = nuevo
+                compartido()["cfg"] = nuevo   # aplica a todos los usuarios conectados
                 db.auditar(con, pid, "config_recargada", {})
-                avisar("success", "Configuración recargada y validada.")
+                avisar("success", "Configuración recargada y validada para todos los usuarios.")
             st.rerun()
         if st.button("♻️ Reimportar datos", width="stretch",
                      help="Reinicia la base y vuelve a importar los CSV (reprocesa la cuarentena)."):
