@@ -92,28 +92,82 @@ app.py                    Interfaz por rol (Streamlit)
 
 ## Instalación y ejecución
 
-### 1. IA local
-1. Instalar [Ollama](https://ollama.com).
-2. Descargar el modelo:
-   ```bash
-   ollama pull qwen2.5:7b
-   ```
+### Requisitos previos
+| Requisito | Versión | Notas |
+|---|---|---|
+| [Python](https://www.python.org/downloads/) | 3.10 o superior | En Windows, marcar *"Add Python to PATH"* al instalar |
+| [Git](https://git-scm.com/downloads) | Cualquiera | Para clonar el repositorio |
+| [Ollama](https://ollama.com) | Reciente | IA local. Ocupa ~5 GB con el modelo |
+| Hardware | 16 GB de RAM recomendados | Con GPU NVIDIA (≥ 6 GB de VRAM) la IA responde en ~5 s; solo con CPU puede tardar 30–60 s (ver *Sin GPU*) |
 
-### 2. Aplicación
+### Paso 1: clonar
 ```bash
+git clone https://github.com/andrewk-g/Proyecto-hackaton-by-trinity.git
+cd Proyecto-hackaton-by-trinity
+```
+
+### Paso 2: IA local
+Instalar Ollama, abrirlo (queda corriendo en segundo plano) y descargar el modelo:
+```bash
+ollama pull qwen2.5:7b
+```
+
+### Paso 3: entorno de Python
+**Windows (PowerShell):**
+```powershell
 python -m venv .venv
-.venv\Scripts\activate          # Windows  (Linux/Mac: source .venv/bin/activate)
+.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+```
+Si PowerShell bloquea la activación, ejecutar una vez: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+
+**Linux / macOS:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Paso 4: configuración (opcional)
+```bash
+cp .env.example .env
+```
+Solo hace falta si se quiere cambiar el modelo, la URL de Ollama o la carpeta de datos. **No hay credenciales.**
+
+### Paso 5: verificar
+```bash
+python verificar.py
+```
+Revisa Python, dependencias, configuración, datos y conexión con la IA, y dice exactamente qué falta.
+
+### Paso 6: ejecutar
+```bash
 streamlit run app.py
 ```
-Se abre en `http://localhost:8501`. La primera vez importa los CSV de `data/ejemplo` (ficticios). Para usar los datos oficiales, defina `DATA_DIR` con su carpeta y use **Reimportar datos**.
+Se abre en `http://localhost:8501`. La primera vez carga el modelo en memoria (puede tardar ~1 minuto) e importa los CSV de `data/ejemplo` (ficticios, con casos borde).
 
-### 3. Pruebas
+### Pruebas
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-Variables opcionales en `.env.example` (`AI_BASE_URL`, `AI_MODEL`, `DATA_DIR`). No hay credenciales.
+### Datos oficiales
+Copiar los CSV oficiales a una carpeta (ej. `data/oficial`), poner `DATA_DIR=data/oficial` en `.env`, reiniciar la app y usar **Reimportar datos** (rol Administrativo o TI). Los valores de sus catálogos se mapean en `config/reglas.yaml` → `catalogos`.
+
+### Sin GPU
+La app funciona, pero la IA es más lenta. Opciones:
+- Subir `ia.timeout_seg` en `config/reglas.yaml` (ej. a `90`).
+- Usar un modelo más liviano: `ollama pull qwen2.5:3b` y `AI_MODEL=qwen2.5:3b` en `.env`.
+
+Si la IA no responde, la app **no se cae**: lo indica y permite clasificar manualmente.
+
+### Problemas comunes
+| Síntoma | Solución |
+|---|---|
+| "IA no disponible: Ollama no responde" | Abrir la aplicación Ollama y pulsar **Reintentar conexión IA** |
+| "Modelo … no descargado" | `ollama pull qwen2.5:7b` |
+| `streamlit` no se reconoce | Activar el entorno virtual (Paso 3) |
+| Se quiere empezar de cero | Borrar `data/campus.db` o usar **Reimportar datos** |
 
 ## Guía de demo
 | Paso | Actuar como | Acción | Resultado esperado |

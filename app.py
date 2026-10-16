@@ -6,13 +6,14 @@ from datetime import datetime, time, timedelta
 
 import streamlit as st
 
+from campus import RAIZ
 from campus import config as conf
 from campus import db, fechas, ia, importador
 from campus import servicios as s
 
 st.set_page_config(page_title="Campus · Gestión Operativa", page_icon="🏫", layout="wide")
 
-DATA_DIR = os.getenv("DATA_DIR", "data/ejemplo")
+DATA_DIR = RAIZ / os.getenv("DATA_DIR", "data/ejemplo")
 ETIQUETA_ROL = {"usuario": "Usuario", "administrativo": "Administrativo", "ti": "TI"}
 COLOR_ESTADO = {"aplicada": "🔴", "pendiente_verificacion": "🟠", "abierta": "🟡", "descartada": "⚪", "resuelta": "🟢"}
 
