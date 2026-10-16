@@ -105,6 +105,7 @@ app.py                    Interfaz por rol (Streamlit)
 git clone https://github.com/andrewk-g/Proyecto-hackaton-by-trinity.git
 cd Proyecto-hackaton-by-trinity
 ```
+> **Windows:** clonar en una ruta corta (ej. `C:\proyectos\`). En carpetas muy profundas (OneDrive, rutas largas) Windows supera el límite de 260 caracteres y `pip` instala Streamlit incompleto.
 
 ### Paso 2: IA local
 Instalar Ollama, abrirlo (queda corriendo en segundo plano) y descargar el modelo:
@@ -167,6 +168,7 @@ Si la IA no responde, la app **no se cae**: lo indica y permite clasificar manua
 | "IA no disponible: Ollama no responde" | Abrir la aplicación Ollama y pulsar **Reintentar conexión IA** |
 | "Modelo … no descargado" | `ollama pull qwen2.5:7b` |
 | `streamlit` no se reconoce | Activar el entorno virtual (Paso 3) |
+| `No module named 'streamlit.proto'` (Windows) | Ruta demasiado larga: mover el proyecto a una ruta corta, borrar `.venv` y repetir el Paso 3 |
 | Se quiere empezar de cero | Borrar `data/campus.db` o usar **Reimportar datos** |
 
 ## Guía de demo

@@ -28,8 +28,11 @@ for modulo in ("streamlit", "yaml", "requests"):
         __import__(modulo)
     except ImportError:
         faltan.append(modulo)
-revisar(not faltan, "Dependencias instaladas",
-        f"Faltan dependencias ({', '.join(faltan)}): ejecute  pip install -r requirements.txt")
+mensaje = f"Faltan dependencias ({', '.join(faltan)}): ejecute  pip install -r requirements.txt"
+if os.name == "nt" and len(str(Path(sys.prefix))) > 100:
+    mensaje += ("\n           La ruta del proyecto es muy larga para Windows: muévalo a una ruta corta "
+                "(ej. C:\\proyectos\\), borre .venv y reinstale.")
+revisar(not faltan, "Dependencias instaladas", mensaje)
 if faltan:
     sys.exit(1)
 
