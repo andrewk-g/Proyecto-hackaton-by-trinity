@@ -8,10 +8,37 @@ import streamlit as st
 
 from campus import RAIZ
 from campus import config as conf
-from campus import db, fechas, ia, importador
+from campus import db, fechas, ia, importador, mapa
 from campus import servicios as s
 
 st.set_page_config(page_title="Campus · Gestión Operativa", page_icon="🏫", layout="wide")
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+html, body, [class*="css"], .stMarkdown, button, input, textarea, select { font-family: 'Inter', sans-serif; }
+[data-testid="stAppViewContainer"] {
+  background-color: #020617;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+[data-testid="stSidebar"] { background: #0b1120; border-right: 1px solid #1e293b; }
+[data-testid="stMetric"] { background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 14px 18px; }
+[data-testid="stMetricValue"] { font-family: 'JetBrains Mono', monospace; }
+[data-testid="stExpander"] { border: 1px solid #1e293b; border-radius: 12px; background: #0b1120; }
+.stTabs [data-baseweb="tab-list"] { gap: 4px; background: #0b1120; padding: 4px; border-radius: 12px; border: 1px solid #1e293b; }
+.stTabs [data-baseweb="tab"] { border-radius: 9px; padding: 6px 14px; }
+.stTabs [aria-selected="true"] { background: rgba(16,185,129,0.15); }
+.marca { display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+.marca .logo { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(45deg,#10b981,#06b6d4); box-shadow:0 8px 24px rgba(16,185,129,0.25); font-size:22px; }
+.marca h1 { font-size:1.35rem; font-weight:800; letter-spacing:-0.02em; color:#fff; margin:0; padding:0; }
+.marca .chip { font-size:0.72rem; padding:2px 10px; border-radius:999px; background:rgba(16,185,129,0.1);
+  color:#34d399; border:1px solid rgba(16,185,129,0.25); font-weight:600; }
+.marca p { margin:0; color:#94a3b8; font-size:0.85rem; }
+</style>
+""", unsafe_allow_html=True)
 
 DATA_DIR = RAIZ / os.getenv("DATA_DIR", "data/ejemplo")
 ETIQUETA_ROL = {"usuario": "Usuario", "administrativo": "Administrativo", "ti": "TI"}
@@ -92,7 +119,17 @@ with st.sidebar:
             avisar("success", "Datos reimportados.")
             st.rerun()
 
-st.title("Sistema Central de Gestión Operativa")
+st.markdown("""<div class="marca"><div class="logo">🏫</div><div>
+<h1>CAMPUSLANDS <span class="chip">Gestión Operativa · MVP</span></h1>
+<p>Espacios, recursos e incidencias en un solo flujo asistido por IA local</p></div></div>""", unsafe_allow_html=True)
+
+k1, k2, k3, k4 = st.columns(4)
+_esp = db.filas(con, "SELECT estado FROM espacios")
+k1.metric("Espacios disponibles", f"{sum(e['estado'] == 'disponible' for e in _esp)} / {len(_esp)}")
+k2.metric("Equipos disponibles", db.fila(con, "SELECT COUNT(*) n FROM recursos WHERE estado = 'disponible'")["n"])
+k3.metric("Incidencias abiertas",
+          db.fila(con, "SELECT COUNT(*) n FROM incidencias WHERE estado IN ('abierta', 'aplicada', 'pendiente_verificacion')")["n"])
+k4.metric("Por verificar", db.fila(con, "SELECT COUNT(*) n FROM incidencias WHERE estado = 'pendiente_verificacion'")["n"])
 mostrar_flash()
 
 pestanas = []
@@ -263,11 +300,18 @@ with tabs["Reportar incidencia"]:
 
 # ═══ Estado del campus ═══════════════════════════════════════════════════
 with tabs["Estado del campus"]:
-    st.subheader("Espacios")
-    st.dataframe([{"Espacio": e["nombre"], "Aforo": e["aforo"],
-                   "Estado": ("⛔ inhabilitado (" + e["inhabilitacion"] + ")") if e["estado"] == "inhabilitado" else "✅ disponible",
-                   "Avisos": "; ".join(s.avisos_espacio(con, cfg, e))} for e in espacios],
-                 hide_index=True, width="stretch")
+    avisos_por_id = {e["id"]: s.avisos_espacio(con, cfg, e) for e in espacios}
+    col_mapa, col_tabla = st.columns([2, 3])
+    with col_mapa:
+        st.subheader("Mapa del campus")
+        st.caption("🟢 disponible · 🟠 con avisos · 🔴 inhabilitado — pase el cursor sobre una sala")
+        st.markdown(mapa.svg(espacios, avisos_por_id), unsafe_allow_html=True)
+    with col_tabla:
+        st.subheader("Espacios")
+        st.dataframe([{"Espacio": e["nombre"], "Aforo": e["aforo"],
+                       "Estado": ("⛔ inhabilitado (" + e["inhabilitacion"] + ")") if e["estado"] == "inhabilitado" else "✅ disponible",
+                       "Avisos": "; ".join(avisos_por_id[e["id"]])} for e in espacios],
+                     hide_index=True, width="stretch")
     st.subheader("Recursos")
     st.dataframe([{"ID": r["id"], "Recurso": r["nombre"], "Pool": cfg["pools"][r["pool"]]["nombre"], "Estado": r["estado"]}
                   for r in db.filas(con, "SELECT * FROM recursos ORDER BY id")], hide_index=True, width="stretch")
