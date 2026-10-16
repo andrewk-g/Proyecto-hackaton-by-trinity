@@ -1,0 +1,11 @@
+id,nombre,tipo,estado
+R01,Portátil Lenovo,Laptop,Operativo
+R02,Portátil HP,Portatil,Operativo
+R03,Tablet Samsung,Tablet,Operativo
+R04,Micrófono inalámbrico,Micrófono,Operativo
+R05,Parlante JBL,Parlante,Operativo
+R06,Cámara Canon,Cámara,En uso
+R07,Dron DJI,Dron,Operativo
+R01,Portátil repetido,Laptop,Operativo
+R08,Portátil Dell, laptop ,Operativo
+R09,Portátil Asus,Laptop,Extraviado

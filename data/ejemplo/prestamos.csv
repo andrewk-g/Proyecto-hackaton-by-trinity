@@ -1,0 +1,5 @@
+id,recurso_id,persona_id,inicio,fin_esperado,devolucion_real
+L01,R06,P04,AHORA-120m,AHORA+120m,
+L02,R02,P02,HOY-2 08:00,HOY-1 08:00,
+L03,R03,P01,HOY-1 09:00,HOY-1 12:00,HOY-1 11:00
+L04,R04,P03,HOY 10:00,HOY 08:00,

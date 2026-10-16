@@ -1,0 +1,10 @@
+id,espacio_id,persona_id,inicio,fin,asistentes,estado
+B01,E02,P01,AHORA-60m,AHORA+60m,30,Confirmada
+B02,E02,P02,AHORA+120m,AHORA+240m,25,Confirmada
+B03,E05,P03,AHORA+120m,AHORA+180m,20,Confirmada
+B04,E03,P04,HOY+1 08:00,HOY+1 10:00,40,Confirmada
+B05,E99,P01,HOY+1 08:00,HOY+1 09:00,10,Confirmada
+B06,E01,P02,HOY+1 14:00,HOY+1 16:00,,Confirmada
+B07,E06,P03,AHORA-30m,AHORA+90m,15,Confirmada
+B08,E08,P04,HOY+1 12:00,HOY+1 10:00,5,Confirmada
+B09,E07,P01,HOY-1 08:00,HOY-1 10:00,8,Finalizada
