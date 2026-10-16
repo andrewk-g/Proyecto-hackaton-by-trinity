@@ -13,7 +13,7 @@ Campuslands crece rápido y gestiona aulas, préstamo de equipos e incidencias c
 ## La solución en un flujo
 ```
 1. Una persona reporta en texto libre: "No hay internet en Sputnik"
-2. La IA clasifica          → categoría, prioridad, confianza
+2. La IA clasifica          → elemento, prioridad, confianza
 3. El sistema valida        → ¿existe el elemento? ¿coincide con lo seleccionado?
 4. Regla de impacto         → internet en Sputnik: INVALIDA
 5. R7 decide                → ¿crítica + confianza + vínculo en ventana? → automático; si no → humano
@@ -32,13 +32,17 @@ Campuslands crece rápido y gestiona aulas, préstamo de equipos e incidencias c
 | Incidencias | Triaje con IA, impacto por elemento, inhabilitación automática controlada y verificación humana |
 
 ## Rol de la IA
-1. **Triaje de incidencias:** categoría, prioridad, confianza y objeto afectado, en JSON validado contra la configuración.
+Modelo local **Qwen 2.5 7B** sobre **Ollama**: sin API keys ni datos fuera del equipo.
+
+1. **Triaje de incidencias:** elemento afectado, IDs, prioridad y confianza, en JSON validado contra la configuración.
 2. **Recomendación de alternativas:** explica y desempata entre opciones que las reglas ya filtraron.
 
 **Controles:**
-- Salida estructurada y validada; categorías u objetos inexistentes se rechazan.
+- Salida estructurada forzada por Ollama con esquema JSON; la lista de elementos válidos se construye por espacio desde la configuración.
+- Elementos o IDs inexistentes se rechazan.
+- El reporte del usuario se trata como dato, no como instrucción (defensa contra *prompt injection*).
 - Confianza por debajo del umbral, objeto que no coincide o falta de vínculo → verificación humana.
-- Temperatura 0 para respuestas reproducibles.
+- Temperatura 0 y semilla fija para respuestas reproducibles.
 - Si la IA no responde, el sistema lo indica y pasa a clasificación manual. **Nunca se simula una respuesta.**
 - Se registran el prompt, la respuesta cruda y la decisión final.
 
@@ -67,9 +71,20 @@ Todos los parámetros (horarios, límites, umbrales, catálogos, pools, elemento
 - En pruebas solo se usan datos ficticios.
 
 ## Stack
-_(por definir)_
+- **IA:** Ollama + `qwen2.5:7b` (local).
+- **Aplicación:** _(por definir)_
 
 ## Instalación y ejecución
+
+### 1. IA local
+1. Instalar [Ollama](https://ollama.com).
+2. Descargar el modelo:
+   ```bash
+   ollama pull qwen2.5:7b
+   ```
+3. Verificar que el servidor responde en `http://localhost:11434`.
+
+### 2. Aplicación
 _(por definir con el stack)_
 
-Las credenciales van en `.env` (nunca en el repositorio). Ver `.env.example`.
+La configuración de entorno va en `.env` (nunca en el repositorio). Ver `.env.example`.
