@@ -5,7 +5,10 @@ MVP para la Hackatón Campuslands **"El campus bajo presión"**. Unifica espacio
 > Las decisiones de diseño están en [DECISIONES.md](DECISIONES.md). Es el contrato del equipo: lo que no está ahí, no se programa.
 
 ## Integrantes
-- _(completar)_
+- Juan Daniel Tapias
+- Diego Rosas
+- Carlos Fuentes
+- Camilo Céspedes
 
 ## Problema
 Campuslands crece rápido y gestiona aulas, préstamo de equipos e incidencias con registros dispersos y revisiones manuales. Eso genera demoras, errores y asignaciones de espacios o equipos que no están en condiciones de usarse.
